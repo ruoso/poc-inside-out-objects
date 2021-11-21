@@ -9,7 +9,7 @@ struct TestStruct1 {
 };
 
 using TestStruct1_Storage =
-  cpioo::managed_entity::storage<TestStruct1>;
+  cpioo::managed_entity::storage<TestStruct1, 1, 10>;
 using TestStruct1_Ref =
   TestStruct1_Storage::ref_type;
 
@@ -18,7 +18,7 @@ struct TestStruct2 {
   const TestStruct1_Storage::ref_type ts1;
 };
 using TestStruct2_Storage =
-  cpioo::managed_entity::storage<TestStruct2>;
+  cpioo::managed_entity::storage<TestStruct2, 1, 10>;
 using TestStruct2_Ref =
   TestStruct2_Storage::ref_type;
 
@@ -27,7 +27,7 @@ struct TestStruct3 {
   const TestStruct2_Storage::ref_type ts2;
 };
 using TestStruct3_Storage =
-  cpioo::managed_entity::storage<TestStruct3>;
+  cpioo::managed_entity::storage<TestStruct3, 1, 10>;
 using TestStruct3_Ref =
   TestStruct3_Storage::ref_type;
 
