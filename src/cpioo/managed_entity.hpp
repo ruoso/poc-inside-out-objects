@@ -21,11 +21,12 @@ namespace cpioo {
   namespace managed_entity {
 
     template < class STORAGE >
-    struct reference {
+    class reference {
       STORAGE& d_storage;
       typename STORAGE::type* d_ptr;
       const size_t d_index;
 
+    public:
       reference
       (STORAGE& storage,
        typename STORAGE::type* ptr,
