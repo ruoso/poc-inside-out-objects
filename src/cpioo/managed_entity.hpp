@@ -23,18 +23,22 @@ namespace cpioo {
     template < class STORAGE >
     struct reference {
       STORAGE& d_storage;
+      typename STORAGE::type* d_ptr;
       const size_t d_index;
 
       reference
       (STORAGE& storage,
+       typename STORAGE::type* ptr,
        const size_t index)
         :d_storage(storage),
+         d_ptr(ptr),
          d_index(index) {
         d_storage.refcnt_add(index);
       }
 
       reference(const reference& other)
         :d_storage(other.d_storage),
+         d_ptr(other.d_ptr),
          d_index(other.d_index) {
         d_storage.refcnt_add(d_index);
       }
@@ -46,11 +50,11 @@ namespace cpioo {
       }
 
       typename STORAGE::type* operator->() {
-        return d_storage.access(d_index);
+        return d_ptr;
       }
 
-      const typename STORAGE::type * operator->() const {
-        return d_storage.access_const(d_index);
+      const typename STORAGE::type * const operator->() const {
+        return d_ptr;
       }
 
     };
@@ -187,20 +191,20 @@ namespace cpioo {
       ref_type make_entity() {
         auto n = get_new_storage();
         T* initialized = new(std::get<0>(n)) T;
-        return reference(*this, std::get<1>(n));
+        return reference(*this, initialized, std::get<1>(n));
       }
 
       ref_type make_entity(const T& other) {
         auto n = get_new_storage();
         T* initialized = new(std::get<0>(n)) T(other);
-        return reference(*this, std::get<1>(n));
+        return reference(*this, initialized, std::get<1>(n));
       }
 
       ref_type make_entity(T&& other) {
         auto n = get_new_storage();
         T* uninitialized = static_cast<T*>(std::get<0>(n));
         std::uninitialized_move_n(std::addressof(other), 1, uninitialized);
-        return reference(*this, std::get<1>(n));
+        return reference(*this, uninitialized, std::get<1>(n));
       }
 
       void refcnt_add(size_t index) {
@@ -223,22 +227,6 @@ namespace cpioo {
         if (old == 1) {
           s_available_on_thread[this].push(index);
         }
-      }
-
-      type* access(size_t index) {
-        size_t index_in_superbuffer;
-        size_t index_in_buffer;
-        std::tie(index_in_superbuffer, index_in_buffer) =
-          split_index(index);
-        return &((*(d_buffers[index_in_superbuffer]))[index_in_buffer]);
-      }
-
-      const type* access_const(size_t index) const {
-        size_t index_in_superbuffer;
-        size_t index_in_buffer;
-        std::tie(index_in_superbuffer, index_in_buffer) =
-          split_index(index);
-        return &((*(d_buffers[index_in_superbuffer]))[index_in_buffer]);
       }
 
     };
