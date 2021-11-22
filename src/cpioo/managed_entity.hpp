@@ -23,7 +23,7 @@ namespace cpioo {
     template < class STORAGE >
     class reference {
       STORAGE& d_storage;
-      typename STORAGE::type* d_ptr;
+      typename STORAGE::type* const d_ptr;
       const size_t d_index;
 
     public:
