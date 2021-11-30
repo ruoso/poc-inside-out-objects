@@ -8,7 +8,7 @@ struct TestStruct {
   int d;
 };
 
-using storage_t = cpioo::managed_entity::storage<TestStruct, 1, 10>;
+using storage_t = cpioo::managed_entity::storage<TestStruct, 1, short>;
 using reference_t = cpioo::managed_entity::reference<storage_t>;
 using immutable_t = const cpioo::managed_entity::reference<storage_t>;
 

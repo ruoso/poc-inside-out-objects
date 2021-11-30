@@ -22,32 +22,28 @@ namespace cpioo {
 
     template < class STORAGE >
     class reference {
-      STORAGE& d_storage;
       typename STORAGE::type* const d_ptr;
-      const size_t d_index;
+      const typename STORAGE::index_type d_index;
 
     public:
       reference
-      (STORAGE& storage,
-       typename STORAGE::type* ptr,
-       const size_t index)
-        :d_storage(storage),
-         d_ptr(ptr),
+      (typename STORAGE::type* ptr,
+       const typename STORAGE::index_type index)
+        :d_ptr(ptr),
          d_index(index) {
-        d_storage.refcnt_add(index);
+        STORAGE::refcnt_add(index);
       }
 
       reference(const reference& other)
-        :d_storage(other.d_storage),
-         d_ptr(other.d_ptr),
+        :d_ptr(other.d_ptr),
          d_index(other.d_index) {
-        d_storage.refcnt_add(d_index);
+        STORAGE::refcnt_add(d_index);
       }
 
       reference(reference&&) = default;
 
       ~reference() {
-        d_storage.refcnt_subtract(d_index);
+        STORAGE::refcnt_subtract(d_index);
       }
 
       typename STORAGE::type* operator->() {
@@ -63,11 +59,17 @@ namespace cpioo {
     constexpr int buffer_size(int buffer_size_bits) {
       return 1 << buffer_size_bits;
     }
+
+    constexpr int buffer_count(int buffer_size_bits, int sizeof_index) {
+      return (1 << ((sizeof_index*8)+1)) - 1 - buffer_size(buffer_size_bits);
+    }
       
     template <
       class T,
       std::size_t BUFFER_SIZE_BITS = 10,
-      std::size_t BUFFER_COUNT = 1024 * 1024,
+      typename INDEX_TYPE = size_t,
+      std::size_t BUFFER_COUNT = buffer_count(BUFFER_SIZE_BITS,
+                                              sizeof(INDEX_TYPE)),
       typename REFCNT_TYPE = short,
       class DATA_ALLOCATOR = std::allocator<
         std::array<T, buffer_size(BUFFER_SIZE_BITS) >
@@ -89,41 +91,39 @@ namespace cpioo {
 
       using type = T;
       using ref_type = reference<storage>;
+      using index_type = INDEX_TYPE;
 
     private:
-      DATA_ALLOCATOR d_data_allocator;
-      REFCNT_ALLOCATOR d_refcnt_allocator;
-      superbuffer d_buffers;
-      refcntsuperbuffer d_refcntbuffers;
+      inline static DATA_ALLOCATOR s_data_allocator;
+      inline static REFCNT_ALLOCATOR s_refcnt_allocator;
+      inline static superbuffer s_buffers;
+      inline static refcntsuperbuffer s_refcntbuffers;
 
       // memory freed on one thread is only available on that thread
       inline static thread_local
-      std::map<
-        storage*,
-        std::queue<size_t>
-        > s_available_on_thread;
+      std::queue<INDEX_TYPE> s_available_on_thread;
 
-      std::atomic<size_t> d_elements_reserved = 0;
-      std::atomic<size_t> d_elements_capacity = 0;
+      inline static std::atomic<INDEX_TYPE> s_elements_reserved = 0;
+      inline static std::atomic<INDEX_TYPE> s_elements_capacity = 0;
 
-      std::tuple<size_t, size_t>
-      constexpr split_index(size_t index) const {
-        size_t index_in_superbuffer = index >> BUFFER_SIZE_BITS;
-        size_t index_in_buffer = index & ((1 << BUFFER_SIZE_BITS)-1);
+      std::tuple<INDEX_TYPE, INDEX_TYPE>
+      constexpr static split_index(INDEX_TYPE index) {
+        INDEX_TYPE index_in_superbuffer = index >> BUFFER_SIZE_BITS;
+        INDEX_TYPE index_in_buffer = index & ((1 << BUFFER_SIZE_BITS)-1);
         return {index_in_superbuffer, index_in_buffer};
       }
       
-      std::tuple<void*, size_t>
+      inline static std::tuple<void*, INDEX_TYPE>
       get_new_storage() {
         // We try to consume any memory already available to this
         // thread before trying to do anything that would cause a
         // synchronization requirement.
-        if (s_available_on_thread[this].empty()) {
+        if (s_available_on_thread.empty()) {
 
           // this will return the index of the desired element
-          size_t index = d_elements_reserved.fetch_add(1);
-          size_t index_in_superbuffer;
-          size_t index_in_buffer;
+          INDEX_TYPE index = s_elements_reserved.fetch_add(1);
+          INDEX_TYPE index_in_superbuffer;
+          INDEX_TYPE index_in_buffer;
           std::tie(index_in_superbuffer, index_in_buffer) =
             split_index(index);
 
@@ -138,40 +138,40 @@ namespace cpioo {
           // 3) the index is bigger than the current capacity, that
           // means we need to yield and wait for the thread in the
           // first case to do its allocation, and then we can proceed.
-          if (index == d_elements_capacity) {
+          if (index == s_elements_capacity) {
 
-            buffer* bp = d_data_allocator.allocate(1);
-            d_buffers[index_in_superbuffer] = bp;
+            buffer* bp = s_data_allocator.allocate(1);
+            s_buffers[index_in_superbuffer] = bp;
             
             refcntbuffer* rcb =
-              new(d_refcnt_allocator.allocate(1)) refcntbuffer;
+              new(s_refcnt_allocator.allocate(1)) refcntbuffer;
             for ( auto i = rcb->begin(); i != rcb->end(); i++ ) {
               new(i) typename refcntbuffer::value_type;
             }
 
-            d_refcntbuffers[index_in_superbuffer] = rcb;
-            d_elements_capacity.fetch_add(1<<BUFFER_SIZE_BITS);
+            s_refcntbuffers[index_in_superbuffer] = rcb;
+            s_elements_capacity.fetch_add(1<<BUFFER_SIZE_BITS);
 
           } else {
-            while (index > d_elements_capacity) {
+            while (index > s_elements_capacity) {
               std::this_thread::yield();
             }
           }
 
           return {
-            &(d_buffers[index_in_superbuffer][index_in_buffer]),
+            &(s_buffers[index_in_superbuffer][index_in_buffer]),
             index
           };
         } else {
           // TODO: opportunistically release memory from the thread
-          size_t index = s_available_on_thread[this].front();
-          size_t index_in_superbuffer;
-          size_t index_in_buffer;
+          INDEX_TYPE index = s_available_on_thread.front();
+          INDEX_TYPE index_in_superbuffer;
+          INDEX_TYPE index_in_buffer;
           std::tie(index_in_superbuffer, index_in_buffer) =
             split_index(index);
-          s_available_on_thread[this].pop();
+          s_available_on_thread.pop();
           return {
-            &((*(d_buffers[index_in_superbuffer]))[index_in_buffer]),
+            &((*(s_buffers[index_in_superbuffer]))[index_in_buffer]),
             index
           };
         }
@@ -181,52 +181,53 @@ namespace cpioo {
 
       storage() = default;
 
-      inline size_t get_elements_reserved() {
-        return d_elements_reserved;
+      inline static INDEX_TYPE get_elements_reserved() {
+        return s_elements_reserved;
       }
 
-      inline size_t get_elements_capacity() {
-        return d_elements_capacity;
+      inline static INDEX_TYPE get_elements_capacity() {
+        return s_elements_capacity;
       }
 
-      ref_type make_entity() {
+      inline static ref_type make_entity() {
         auto n = get_new_storage();
-        T* initialized = new(std::get<0>(n)) T;
-        return reference(*this, initialized, std::get<1>(n));
+        type* initialized = new(std::get<0>(n)) T;
+        INDEX_TYPE index = std::get<1>(n);
+        return ref_type(initialized, index);
       }
 
-      ref_type make_entity(const T& other) {
+      inline static ref_type make_entity(const T& other) {
         auto n = get_new_storage();
         T* initialized = new(std::get<0>(n)) T(other);
-        return reference(*this, initialized, std::get<1>(n));
+        return ref_type(initialized, std::get<1>(n));
       }
 
-      ref_type make_entity(T&& other) {
+      inline static ref_type make_entity(T&& other) {
         auto n = get_new_storage();
         T* uninitialized = static_cast<T*>(std::get<0>(n));
         std::uninitialized_move_n(std::addressof(other), 1, uninitialized);
-        return reference(*this, uninitialized, std::get<1>(n));
+        return ref_type(uninitialized, std::get<1>(n));
       }
 
-      void refcnt_add(size_t index) {
-        size_t index_in_superbuffer;
-        size_t index_in_buffer;
+      inline static void refcnt_add(INDEX_TYPE index) {
+        INDEX_TYPE index_in_superbuffer;
+        INDEX_TYPE index_in_buffer;
         std::tie(index_in_superbuffer, index_in_buffer) =
           split_index(index);
-        (*(d_refcntbuffers[index_in_superbuffer]))[index_in_buffer]
+        (*(s_refcntbuffers[index_in_superbuffer]))[index_in_buffer]
           .fetch_add(1);
       }
       
-      void refcnt_subtract(size_t index) {
-        size_t index_in_superbuffer;
-        size_t index_in_buffer;
+      inline static void refcnt_subtract(INDEX_TYPE index) {
+        INDEX_TYPE index_in_superbuffer;
+        INDEX_TYPE index_in_buffer;
         std::tie(index_in_superbuffer, index_in_buffer) =
           split_index(index);
         REFCNT_TYPE old =
-          (*(d_refcntbuffers[index_in_superbuffer]))[index_in_buffer].
+          (*(s_refcntbuffers[index_in_superbuffer]))[index_in_buffer].
           fetch_sub(1);
         if (old == 1) {
-          s_available_on_thread[this].push(index);
+          s_available_on_thread.push(index);
         }
       }
 
