@@ -56,20 +56,20 @@ namespace cpioo {
 
     };
 
-    constexpr int buffer_size(int buffer_size_bits) {
+    constexpr size_t buffer_size(size_t buffer_size_bits) {
       return 1 << buffer_size_bits;
     }
 
-    constexpr int buffer_count(int buffer_size_bits, int sizeof_index) {
-      return (1 << ((sizeof_index*8)+1)) - 1 - buffer_size(buffer_size_bits);
+    template < typename T >
+    constexpr size_t buffer_count(size_t buffer_size_bits) {
+      return std::numeric_limits<T>::max() / buffer_size(buffer_size_bits);
     }
       
     template <
       class T,
-      std::size_t BUFFER_SIZE_BITS = 10,
-      typename INDEX_TYPE = size_t,
-      std::size_t BUFFER_COUNT = buffer_count(BUFFER_SIZE_BITS,
-                                              sizeof(INDEX_TYPE)),
+      std::size_t BUFFER_SIZE_BITS = 16,
+      typename INDEX_TYPE = unsigned int,
+      std::size_t BUFFER_COUNT = buffer_count<INDEX_TYPE>(BUFFER_SIZE_BITS),
       typename REFCNT_TYPE = short,
       class DATA_ALLOCATOR = std::allocator<
         std::array<T, buffer_size(BUFFER_SIZE_BITS) >
@@ -159,7 +159,7 @@ namespace cpioo {
           }
 
           return {
-            &(s_buffers[index_in_superbuffer][index_in_buffer]),
+            &((*(s_buffers[index_in_superbuffer]))[index_in_buffer]),
             index
           };
         } else {
