@@ -60,34 +60,39 @@ namespace cpioo {
       return 1 << buffer_size_bits;
     }
 
-    template < typename T >
-    constexpr size_t buffer_count(size_t buffer_size_bits) {
-      return std::numeric_limits<T>::max() / buffer_size(buffer_size_bits);
+    constexpr int buffer_count(int buffer_size_bits) {
+      return 1 << buffer_size_bits;
+    }
+
+    constexpr int superbuffer_count(int buffer_size_bits, int sizeof_index) {
+      return (1 << ((sizeof_index * 8) + 1)) - 1 - buffer_count(buffer_size_bits);
     }
       
     template <
       class T,
-      std::size_t BUFFER_SIZE_BITS = 16,
-      typename INDEX_TYPE = unsigned int,
-      std::size_t BUFFER_COUNT = buffer_count<INDEX_TYPE>(BUFFER_SIZE_BITS),
+      std::size_t BUFFER_SIZE_BITS = 10,
+      typename INDEX_TYPE = size_t,
+      std::size_t SUPERBUFFER_COUNT = superbuffer_count(BUFFER_SIZE_BITS,
+                                                        sizeof(INDEX_TYPE)),
+      std::size_t BUFFER_COUNT = buffer_count(BUFFER_SIZE_BITS),
       typename REFCNT_TYPE = short,
       class DATA_ALLOCATOR = std::allocator<
-        std::array<T, buffer_size(BUFFER_SIZE_BITS) >
+        std::array<T, BUFFER_COUNT >
         >,
       class REFCNT_ALLOCATOR = std::allocator<
         std::array<
-          std::atomic<REFCNT_TYPE>, buffer_size(BUFFER_SIZE_BITS)
+          std::atomic<REFCNT_TYPE>, BUFFER_COUNT
           >
         >
       >
     class storage {
     public:
       using refcntbuffer =
-        std::array<std::atomic<REFCNT_TYPE>, buffer_size(BUFFER_SIZE_BITS) >;
-      using refcntsuperbuffer = std::array<refcntbuffer*, BUFFER_COUNT>;
+        std::array<std::atomic<REFCNT_TYPE>, BUFFER_COUNT >;
+      using refcntsuperbuffer = std::array<refcntbuffer*, SUPERBUFFER_COUNT>;
       
-      using buffer = std::array<T, buffer_size(BUFFER_SIZE_BITS)>;
-      using superbuffer = std::array<buffer*, BUFFER_COUNT>;
+      using buffer = std::array<T, BUFFER_COUNT>;
+      using superbuffer = std::array<buffer*, SUPERBUFFER_COUNT>;
 
       using type = T;
       using ref_type = reference<storage>;
@@ -147,6 +152,7 @@ namespace cpioo {
               new(s_refcnt_allocator.allocate(1)) refcntbuffer;
             for ( auto i = rcb->begin(); i != rcb->end(); i++ ) {
               new(i) typename refcntbuffer::value_type;
+              *i = 0;
             }
 
             s_refcntbuffers[index_in_superbuffer] = rcb;
@@ -158,8 +164,10 @@ namespace cpioo {
             }
           }
 
+          buffer* bp = s_buffers[index_in_superbuffer];
+          void* s = &((*bp)[index_in_buffer]);
           return {
-            &((*(s_buffers[index_in_superbuffer]))[index_in_buffer]),
+            s,
             index
           };
         } else {
