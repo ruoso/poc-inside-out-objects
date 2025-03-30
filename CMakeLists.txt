@@ -3,7 +3,7 @@ project(cppioo LANGUAGES CXX)
 
 # Sanitizer options
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
-option(ENABLE_TSAN "Enable Thread Sanitizer" ON)
+option(ENABLE_TSAN "Enable Thread Sanitizer" OFF)
 
 # Cannot enable both sanitizers at the same time
 if(ENABLE_ASAN AND ENABLE_TSAN)
