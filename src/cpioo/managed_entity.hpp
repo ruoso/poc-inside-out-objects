@@ -58,24 +58,20 @@ namespace cpioo {
       }
     };
 
-    constexpr size_t buffer_size(size_t buffer_size_bits) {
+    constexpr size_t buffer_count(int buffer_size_bits) {
       return 1 << buffer_size_bits;
     }
 
-    constexpr int buffer_count(int buffer_size_bits) {
-      return 1 << buffer_size_bits;
-    }
-
-    constexpr int superbuffer_count(int buffer_size_bits, int sizeof_index) {
-      return (1 << ((sizeof_index * 8) + 1)) - 1 - buffer_count(buffer_size_bits);
+    template <typename INDEX_TYPE>
+    constexpr size_t superbuffer_count(size_t buffer_size_bits) {
+      return std::numeric_limits<INDEX_TYPE>::max() >> buffer_size_bits;
     }
       
     template <
       class T,
       std::size_t BUFFER_SIZE_BITS = 10,
-      typename INDEX_TYPE = size_t,
-      std::size_t SUPERBUFFER_COUNT = superbuffer_count(BUFFER_SIZE_BITS,
-                                                        sizeof(INDEX_TYPE)),
+      typename INDEX_TYPE = uint32_t,
+      std::size_t SUPERBUFFER_COUNT = superbuffer_count<INDEX_TYPE>(BUFFER_SIZE_BITS),
       std::size_t BUFFER_COUNT = buffer_count(BUFFER_SIZE_BITS),
       typename REFCNT_TYPE = short,
       class DATA_ALLOCATOR = std::allocator<
@@ -131,9 +127,6 @@ namespace cpioo {
         ~ThreadFreePoolManager() {
           // Return any remaining items to the global pool on thread exit
           if (!available_indices.empty()) {
-            std::cerr << "Thread exiting, auto-returning " 
-                      << available_indices.size() 
-                      << " items to global pool" << std::endl;
             s_globally_available.push(std::move(available_indices));
           }
         }
@@ -177,7 +170,12 @@ namespace cpioo {
         if (s_available_on_thread.empty()) {
           // No free memory available, allocate new
           // this will return the index of the desired element
+          INDEX_TYPE old_index = s_elements_reserved.load();
           INDEX_TYPE index = s_elements_reserved.fetch_add(1);
+          if (index < old_index) {
+            std::cerr << "Ran out of memory." << std::endl;
+            std::abort();
+          }
           INDEX_TYPE index_in_superbuffer;
           INDEX_TYPE index_in_buffer;
           std::tie(index_in_superbuffer, index_in_buffer) =
@@ -207,6 +205,7 @@ namespace cpioo {
             }
 
             s_refcntbuffers[index_in_superbuffer] = rcb;
+
             s_elements_capacity.fetch_add(1<<BUFFER_SIZE_BITS);
 
           } else {
