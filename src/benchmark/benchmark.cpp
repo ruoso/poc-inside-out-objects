@@ -20,24 +20,24 @@ using testobj_ref = cpioo::managed_entity::reference<testobj_storage>;
 
 // Test object using managed_entity for references
 struct TestObjectManaged {
-  size_t age;
+  size_t birth_tick; // Changed from age to birth_tick
   std::array<std::optional<testobj_ref>, 2> children;
   
-  TestObjectManaged(size_t age, 
+  TestObjectManaged(size_t birth_tick, 
                   std::optional<testobj_ref> child_1, 
                   std::optional<testobj_ref> child_2)
-      : age(age), children{child_1, child_2} {}
+      : birth_tick(birth_tick), children{child_1, child_2} {}
 };
 
 // Test object using shared_ptr for references
 struct TestObjectSharedPtr {
-  size_t age;
+  size_t birth_tick; // Changed from age to birth_tick
   std::array<std::optional<std::shared_ptr<const TestObjectSharedPtr>>, 2> children;
   
-  TestObjectSharedPtr(size_t age, 
+  TestObjectSharedPtr(size_t birth_tick, 
                      std::optional<std::shared_ptr<const TestObjectSharedPtr>> child_1, 
                      std::optional<std::shared_ptr<const TestObjectSharedPtr>> child_2)
-      : age(age), children{child_1, child_2} {}
+      : birth_tick(birth_tick), children{child_1, child_2} {}
 };
 
 // Create a deeply nested tree using shared_ptr
@@ -74,43 +74,71 @@ createManagedEntityTree(size_t depth, size_t& current_age) {
 
 // Simulate one tick using shared_ptr implementation
 std::optional<std::shared_ptr<const TestObjectSharedPtr>>
-simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> node) {
-        if (!node) {
+simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> node, size_t current_tick) {
+    if (!node) {
         return std::nullopt;
     }
     
-    auto new_left = simulateSharedPtrTick(node.value()->children[0]);
-    auto new_right = simulateSharedPtrTick(node.value()->children[1]);
+    // Calculate age based on birth_tick and current_tick
+    size_t age = (current_tick - node.value()->birth_tick) % MAX_AGE;
     
-    // Calculate new age
-    size_t new_age = (node.value()->age + 1) % MAX_AGE;
+    // Process children
+    auto new_left = simulateSharedPtrTick(node.value()->children[0], current_tick);
+    auto new_right = simulateSharedPtrTick(node.value()->children[1], current_tick);
+        
+    bool needs_replacement = (age >= MAX_AGE - 1); // Replace if at max age
     
-    return std::make_shared<TestObjectSharedPtr>(new_age, new_left, new_right);
+    if ((new_left.has_value() != node.value()->children[0].has_value() || 
+         (new_left.has_value() && *new_left != *node.value()->children[0])) ||
+        (new_right.has_value() != node.value()->children[1].has_value() || 
+         (new_right.has_value() && *new_right != *node.value()->children[1])) ||
+        needs_replacement) {
+        // Create a new object with the current tick as birth_tick if the object reached max age
+        size_t new_birth_tick = needs_replacement ? current_tick : node.value()->birth_tick;
+        return std::make_shared<TestObjectSharedPtr>(new_birth_tick, new_left, new_right);
+    }
+    
+    // Return the same object if no changes are needed
+    return node;
 }
 
 // Simulate one tick using ManagedEntity implementation
 std::optional<testobj_ref> 
-simulateManagedEntityTick(std::optional<testobj_ref> node) {
-        if (!node) {
+simulateManagedEntityTick(std::optional<testobj_ref> node, size_t current_tick) {
+    if (!node) {
         return std::nullopt;
     }
     
-    // Update children first (depth-first)
-    auto new_left = simulateManagedEntityTick(node.value()->children[0]);
-    auto new_right = simulateManagedEntityTick(node.value()->children[1]);
+    // Calculate age based on birth_tick and current_tick
+    size_t age = (current_tick - node.value()->birth_tick) % MAX_AGE;
     
-    // Calculate new age
-    size_t new_age = (node.value()->age + 1) % MAX_AGE;
+    // Process children
+    auto new_left = simulateManagedEntityTick(node.value()->children[0], current_tick);
+    auto new_right = simulateManagedEntityTick(node.value()->children[1], current_tick);
+        
+    bool needs_replacement = (age >= MAX_AGE - 1); // Replace if at max age
     
-    // Always create a new node since we're using const objects
-    return testobj_storage::make_entity({new_age, new_left, new_right});
+    if ((new_left.has_value() != node.value()->children[0].has_value() || 
+         (new_left.has_value() && new_left.value() != node.value()->children[0].value())) ||
+        (new_right.has_value() != node.value()->children[1].has_value() || 
+         (new_right.has_value() && new_right.value() != node.value()->children[1].value())) ||
+        needs_replacement) {
+        // Create a new object with the current tick as birth_tick if the object reached max age
+        size_t new_birth_tick = needs_replacement ? current_tick : node.value()->birth_tick;
+        return testobj_storage::make_entity({new_birth_tick, new_left, new_right});
+    }
+
+    // No changes needed, return the same object
+    return node;
 }
 
 thread_local size_t observable = 0;
 void visitSharedPtrTreeNode(std::optional<std::shared_ptr<const TestObjectSharedPtr>> node) {
         if (!node) return;
     
-    observable = node.value()->age;
+    // Calculate age based on birth_tick and current tick
+    observable = node.value()->birth_tick;
+    
     // Visit children
     visitSharedPtrTreeNode(node.value()->children[0]);
     visitSharedPtrTreeNode(node.value()->children[1]);
@@ -119,7 +147,7 @@ void visitSharedPtrTreeNode(std::optional<std::shared_ptr<const TestObjectShared
 void visitManagedEntityTreeNode(std::optional<testobj_ref> const& node) {
         if (!node) return;
     
-    observable = node.value()->age;
+    observable = node.value()->birth_tick;
     // Visit children
     visitManagedEntityTreeNode(node.value()->children[0]);
     visitManagedEntityTreeNode(node.value()->children[1]);
@@ -154,16 +182,17 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
 
     // Start consumer thread
     std::thread consumer_thread([&]() {
-      while (running.load()) {}
+      while (running.load()) {
         sharedptr_visit_count++;
         visitSharedPtrTreeNode(get_root_ref());
-      });
+      }
+    });
 
 
     // Run simulation for a fixed number of ticks
     for (size_t i = 0; i < ticks; ++i) {
       sharedptr_tick_count++;
-      set_root_ref(simulateSharedPtrTick(get_root_ref()).value());
+      set_root_ref(simulateSharedPtrTick(get_root_ref(), MAX_AGE + i).value());
     }
     testobj_storage::return_free_pool_to_global();
     
@@ -223,7 +252,7 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
     // Run simulation for a fixed number of ticks
     for (size_t i = 0; i < ticks; ++i) {
       managed_entity_tick_count++;
-      set_root_ref(simulateManagedEntityTick(get_root_ref()).value());
+      set_root_ref(simulateManagedEntityTick(get_root_ref(), MAX_AGE + i).value());
     }
     
     // Stop consumer thread

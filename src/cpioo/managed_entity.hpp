@@ -47,6 +47,14 @@ namespace cpioo {
       reference& operator=(const reference& other) = delete;
       reference& operator=(reference&& other) noexcept = delete;
 
+      bool operator==(const reference& other) const {
+        return d_ptr == other.d_ptr;
+      }
+
+      bool operator!=(const reference& other) const {
+        return d_ptr != other.d_ptr;
+      }
+
       ~reference() {
         if (d_ptr.has_value()) {
           STORAGE::refcnt_subtract(d_index);
