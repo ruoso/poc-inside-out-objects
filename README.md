@@ -39,9 +39,22 @@ an system with a producer thread and a consumer thread, such as what you
 would see in a game where the entire game state is represented as a tree
 of immutable objects.
 
-The result is that while the producing thread is slower than just using
-shared_ptr, the consumer thread is several orders of magnitude faster
-because it avoids a lot of the contention:
+The results are actually quite interesting:
+
+| Depth/Ticks | Tick/s (SharedPtr) | Tick/s (ManagedEntity) | %-Change (Tick/s) | Visit/s (SharedPtr) | Visit/s (ManagedEntity) | %-Change (Visit/s) |
+|-------------|--------------------|------------------------|-------------------|---------------------|-------------------------|--------------------|
+| 1/1         | 5.46209k          | 5.66755k              | +3.76%            | 5.46209k           | 40.0621k               | +633.33%          |
+| 8/1         | 986.426           | 1.11274k              | +12.81%           | 986.426            | 22.0446k               | +2134.47%         |
+| 10/1        | 272.325           | 343.302               | +26.08%           | 272.325            | 5.22075k               | +1816.49%         |
+| 1/8         | 41.8272k          | 37.1402k              | -11.21%           | 5.2284k            | 108.579k               | +1976.61%         |
+| 8/8         | 2.38805k          | 1.60123k              | -32.94%           | 298.506            | 32.918k                | +1092.57%         |
+| 10/8        | 628.751           | 425.797               | -32.29%           | 78.5939            | 9.32149k               | +11768.92%        |
+| 1/64        | 218.421k          | 117.382k              | -46.23%           | 3.41284k           | 287.149k               | +8309.68%         |
+| 8/64        | 2.97532k          | 1.74707k              | -41.31%           | 46.4894            | 40.888k                | +87920.91%        |
+| 10/64       | 731.811           | 441.863               | -39.63%           | 11.4345            | 9.98197k               | +87188.92%        |
+| 1/200       | 353.78k           | 143.336k              | -59.50%           | 1.7689k            | 355.595k               | +20096.61%        |
+| 8/200       | 3.05117k          | 1.75731k              | -42.42%           | 15.2558            | 41.5516k               | +271.59%          |
+| 10/200      | 756.997           | 440.76                | -41.77%           | 3.78499            | 10.1948k               | +269.43%          |
 
 ```
 2025-03-30T18:53:54-04:00
