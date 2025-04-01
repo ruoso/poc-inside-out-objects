@@ -13,9 +13,9 @@ def parse_benchmark_output(lines):
             continue
             
         # Parse benchmark line
-        match = re.match(r'BM_(\w+)Simulation/(\d+)/(\d+)/real_time\s+\d+ ns\s+\d+ ns\s+\d+\s+Tick_Rate=([^/]+)/s\s+Visit_Rate=([^/]+)/s', line)
+        match = re.match(r'BM_(\w+)Simulation/(\d+)/(\d+)/real_time\s+\d+ ns\s+\d+ ns\s+\d+\s+Objects_Created=([^/]+)/s\s+Tick_Rate=([^/]+)/s\s+Visit_Rate=([^/]+)/s', line)
         if match:
-            simulation_type, depth, ticks, tick_rate, visit_rate = match.groups()
+            simulation_type, depth, ticks, tick_rate, visit_rate, objects_created = match.groups()
             
             # Use depth/ticks as the key
             key = f"{depth}/{ticks}"
@@ -23,7 +23,8 @@ def parse_benchmark_output(lines):
             # Store results
             results[key][simulation_type] = {
                 'tick_rate': tick_rate,
-                'visit_rate': visit_rate
+                'visit_rate': visit_rate,
+                'objects_created': objects_created
             }
     
     return results
@@ -47,8 +48,8 @@ def calculate_percent_change(old_value, new_value):
 
 def generate_markdown_table(results):
     # Table header
-    table = "| Depth/Ticks | Tick/s (SharedPtr) | Tick/s (ManagedEntity) | %-Change (Tick/s) | Visit/s (SharedPtr) | Visit/s (ManagedEntity) | %-Change (Visit/s) |\n"
-    table += "|-------------|--------------------|------------------------|-------------------|---------------------|-------------------------|--------------------|"
+    table = "| Depth/Ticks | Tick/s (SharedPtr) | Tick/s (ManagedEntity) | %-Change (Tick/s) | Visit/s (SharedPtr) | Visit/s (ManagedEntity) | %-Change (Visit/s) | Objects/s (SharedPtr) | Objects/s (ManagedEntity) | %-Change (Objects/s) |\n"
+    table += "|-------------|--------------------|-----------------------|-------------------|---------------------|-------------------------|--------------------|----------------------|--------------------------|----------------------|"
     
     # Sort keys to ensure consistent ordering
     # First by depth, then by ticks
@@ -68,9 +69,10 @@ def generate_markdown_table(results):
         # Calculate percentage changes
         tick_rate_change = calculate_percent_change(shared_ptr['tick_rate'], managed_entity['tick_rate'])
         visit_rate_change = calculate_percent_change(shared_ptr['visit_rate'], managed_entity['visit_rate'])
+        objects_created_change = calculate_percent_change(shared_ptr['objects_created'], managed_entity['objects_created'])
         
         # Add row to table
-        table += f"\n| {key} | {shared_ptr['tick_rate']} | {managed_entity['tick_rate']} | {tick_rate_change} | {shared_ptr['visit_rate']} | {managed_entity['visit_rate']} | {visit_rate_change} |"
+        table += f"\n| {key} | {shared_ptr['tick_rate']} | {managed_entity['tick_rate']} | {tick_rate_change} | {shared_ptr['visit_rate']} | {managed_entity['visit_rate']} | {visit_rate_change} | {shared_ptr['objects_created']} | {managed_entity['objects_created']} | {objects_created_change} |"
     
     return table
 

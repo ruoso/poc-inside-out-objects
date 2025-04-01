@@ -53,7 +53,7 @@ createSharedPtrTree(size_t depth, size_t& current_age) {
     auto left_child = createSharedPtrTree(depth - 1, current_age);
     auto right_child = createSharedPtrTree(depth - 1, current_age);
     
-    return std::make_shared<TestObjectSharedPtr>(current_age, left_child, right_child);
+        return std::make_shared<TestObjectSharedPtr>(current_age, left_child, right_child);
 }
 
 // Create a deeply nested tree using ManagedEntity
@@ -69,12 +69,12 @@ createManagedEntityTree(size_t depth, size_t& current_age) {
     auto left_child = createManagedEntityTree(depth - 1, current_age);
     auto right_child = createManagedEntityTree(depth - 1, current_age);
     
-    return testobj_storage::make_entity({ current_age, left_child, right_child });
+        return testobj_storage::make_entity({ current_age, left_child, right_child });
 }
 
 // Simulate one tick using shared_ptr implementation
 std::optional<std::shared_ptr<const TestObjectSharedPtr>>
-simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> node, size_t current_tick) {
+simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> node, size_t current_tick, size_t& objects_created) {
     if (!node) {
         return std::nullopt;
     }
@@ -83,8 +83,8 @@ simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> 
     size_t age = (current_tick - node.value()->birth_tick) % MAX_AGE;
     
     // Process children
-    auto new_left = simulateSharedPtrTick(node.value()->children[0], current_tick);
-    auto new_right = simulateSharedPtrTick(node.value()->children[1], current_tick);
+    auto new_left = simulateSharedPtrTick(node.value()->children[0], current_tick, objects_created);
+    auto new_right = simulateSharedPtrTick(node.value()->children[1], current_tick, objects_created);
         
     bool needs_replacement = (age >= MAX_AGE - 1); // Replace if at max age
     
@@ -95,6 +95,7 @@ simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> 
         needs_replacement) {
         // Create a new object with the current tick as birth_tick if the object reached max age
         size_t new_birth_tick = needs_replacement ? current_tick : node.value()->birth_tick;
+        objects_created++; // Increment the passed counter instead of the thread_local
         return std::make_shared<TestObjectSharedPtr>(new_birth_tick, new_left, new_right);
     }
     
@@ -104,7 +105,7 @@ simulateSharedPtrTick(std::optional<std::shared_ptr<const TestObjectSharedPtr>> 
 
 // Simulate one tick using ManagedEntity implementation
 std::optional<testobj_ref> 
-simulateManagedEntityTick(std::optional<testobj_ref> node, size_t current_tick) {
+simulateManagedEntityTick(std::optional<testobj_ref> node, size_t current_tick, size_t& objects_created) {
     if (!node) {
         return std::nullopt;
     }
@@ -113,8 +114,8 @@ simulateManagedEntityTick(std::optional<testobj_ref> node, size_t current_tick) 
     size_t age = (current_tick - node.value()->birth_tick) % MAX_AGE;
     
     // Process children
-    auto new_left = simulateManagedEntityTick(node.value()->children[0], current_tick);
-    auto new_right = simulateManagedEntityTick(node.value()->children[1], current_tick);
+    auto new_left = simulateManagedEntityTick(node.value()->children[0], current_tick, objects_created);
+    auto new_right = simulateManagedEntityTick(node.value()->children[1], current_tick, objects_created);
         
     bool needs_replacement = (age >= MAX_AGE - 1); // Replace if at max age
     
@@ -125,6 +126,7 @@ simulateManagedEntityTick(std::optional<testobj_ref> node, size_t current_tick) 
         needs_replacement) {
         // Create a new object with the current tick as birth_tick if the object reached max age
         size_t new_birth_tick = needs_replacement ? current_tick : node.value()->birth_tick;
+        objects_created++; // Increment the passed counter instead of the thread_local
         return testobj_storage::make_entity({new_birth_tick, new_left, new_right});
     }
 
@@ -158,10 +160,12 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
 
   size_t sharedptr_tick_count = 0;
   size_t sharedptr_visit_count = 0;
+  size_t total_objects_created = 0;
+  
   for (auto _ : state) {
     state.PauseTiming();
     
-    
+        
     const size_t depth = state.range(0);
     const size_t ticks = state.range(1);
     size_t current_age = 0;
@@ -192,7 +196,7 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
     // Run simulation for a fixed number of ticks
     for (size_t i = 0; i < ticks; ++i) {
       sharedptr_tick_count++;
-      set_root_ref(simulateSharedPtrTick(get_root_ref(), MAX_AGE + i).value());
+      set_root_ref(simulateSharedPtrTick(get_root_ref(), MAX_AGE + i, total_objects_created).value());
     }
     testobj_storage::return_free_pool_to_global();
     
@@ -200,7 +204,7 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
     running.store(false);
     consumer_thread.join();
     
-  }
+      }
   // Add rate metrics with display flags to show as columns
   state.counters["Tick_Rate"] = benchmark::Counter(
     sharedptr_tick_count, 
@@ -210,6 +214,10 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
     sharedptr_visit_count, 
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
+  state.counters["Objects_Created"] = benchmark::Counter(
+    total_objects_created,
+    benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
+  );
 }
 
 // Benchmark for ManagedEntity implementation
@@ -217,11 +225,12 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
   
   size_t managed_entity_tick_count = 0;
   size_t managed_entity_visit_count = 0;
+  size_t total_objects_created = 0;
 
   for (auto _ : state) {
     state.PauseTiming();
     
-    
+        
     const size_t depth = state.range(0);
     const size_t ticks = state.range(1);
     size_t current_age = 0;
@@ -252,14 +261,14 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
     // Run simulation for a fixed number of ticks
     for (size_t i = 0; i < ticks; ++i) {
       managed_entity_tick_count++;
-      set_root_ref(simulateManagedEntityTick(get_root_ref(), MAX_AGE + i).value());
+      set_root_ref(simulateManagedEntityTick(get_root_ref(), MAX_AGE + i, total_objects_created).value());
     }
     
     // Stop consumer thread
     running.store(false);
     consumer_thread.join();
     
-  }
+      }
   // Add rate metrics with display flags to show as columns
   state.counters["Tick_Rate"] = benchmark::Counter(
     managed_entity_tick_count, 
@@ -267,6 +276,10 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
   );
   state.counters["Visit_Rate"] = benchmark::Counter(
     managed_entity_visit_count, 
+    benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
+  );
+  state.counters["Objects_Created"] = benchmark::Counter(
+    total_objects_created,
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
 }
