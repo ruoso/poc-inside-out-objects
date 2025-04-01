@@ -41,7 +41,6 @@ of immutable objects.
 
 The results are actually quite interesting:
 
----------------------|-------------------------|--------------------|
 | Depth/Ticks | Tick/s (SharedPtr) | Tick/s (ManagedEntity) | %-Change (Tick/s) | Visit/s (SharedPtr) | Visit/s (ManagedEntity) | %-Change (Visit/s) |
 |-------------|--------------------|------------------------|-------------------|---------------------|-------------------------|--------------------|
 | 1/1 | 37.459k | 38.213k | +2.01% | 186.784 | 3.37998k | +1709.57% |
