@@ -33,6 +33,8 @@ def calculate_percent_change(old_value, new_value):
     def parse_value(val):
         if val.endswith('k'):
             return float(val[:-1]) * 1000
+        if val.endswith('M'):
+            return float(val[:-1]) * 1000000
         return float(val)
     
     old_val = parse_value(old_value)

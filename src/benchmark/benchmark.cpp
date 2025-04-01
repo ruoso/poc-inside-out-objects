@@ -273,11 +273,11 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
 
 // Register benchmarks with different tree depths
 BENCHMARK(BM_ManagedEntitySimulation)
-  ->Ranges({{1, 10}, {1, 200}})
+  ->Ranges({{1, 15}, {1, 2000}})
   ->UseRealTime()
   ->DisplayAggregatesOnly(true);
 BENCHMARK(BM_SharedPtrSimulation)
-  ->Ranges({{1, 10}, {1, 200}})
+  ->Ranges({{1, 15}, {1, 2000}})
   ->UseRealTime()
   ->DisplayAggregatesOnly(true);
 

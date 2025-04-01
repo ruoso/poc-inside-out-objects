@@ -41,47 +41,21 @@ of immutable objects.
 
 The results are actually quite interesting:
 
+---------------------|-------------------------|--------------------|
 | Depth/Ticks | Tick/s (SharedPtr) | Tick/s (ManagedEntity) | %-Change (Tick/s) | Visit/s (SharedPtr) | Visit/s (ManagedEntity) | %-Change (Visit/s) |
 |-------------|--------------------|------------------------|-------------------|---------------------|-------------------------|--------------------|
-| 1/1 | 5.51932k | 5.61404k | +1.72% | 13.5682k | 49.6169k | +265.69% |
-| 1/8 | 40.0529k | 38.7162k | -3.34% | 58.931k | 97.5503k | +65.53% |
-| 1/64 | 152.027k | 144.844k | -4.72% | 281.184k | 252.482k | -10.21% |
-| 1/200 | 178.526k | 207.465k | +16.21% | 297.221k | 371.238k | +24.90% |
-| 8/1 | 1.20728k | 1.88236k | +55.92% | 2.2101k | 11.6738k | +428.20% |
-| 8/8 | 3.31373k | 4.3427k | +31.05% | 4.05611k | 23.4889k | +479.10% |
-| 8/64 | 4.06191k | 4.95917k | +22.09% | 5.83598k | 33.7171k | +477.75% |
-| 8/200 | 3.72838k | 5.16013k | +38.40% | 5.54597k | 36.4764k | +557.71% |
-| 10/1 | 352.791 | 733.677 | +107.96% | 520.786 | 2.92727k | +462.09% |
-| 10/8 | 997.538 | 1.22972k | +23.28% | 1.22085k | 7.11414k | +482.72% |
-| 10/64 | 987.759 | 1.34371k | +36.04% | 1.48164k | 9.09915k | +514.13% |
-| 10/200 | 1040.61 | 1.3103k | +25.92% | 1.53317k | 9.05417k | +490.55% |
-
-```
-------------------------------------------------------------------------------------------------------
-Benchmark                                            Time             CPU   Iterations UserCounters...
-------------------------------------------------------------------------------------------------------
-BM_ManagedEntitySimulation/1/1/real_time        178125 ns        62806 ns         3957 Tick_Rate=5.61404k/s Visit_Rate=49.6169k/s
-BM_ManagedEntitySimulation/8/1/real_time        531247 ns       301930 ns         1200 Tick_Rate=1.88236k/s Visit_Rate=11.6738k/s
-BM_ManagedEntitySimulation/10/1/real_time      1362998 ns       929080 ns          493 Tick_Rate=733.677/s Visit_Rate=2.92727k/s
-BM_ManagedEntitySimulation/1/8/real_time        206632 ns        85676 ns         3287 Tick_Rate=38.7162k/s Visit_Rate=97.5503k/s
-BM_ManagedEntitySimulation/8/8/real_time       1842173 ns      1628820 ns          377 Tick_Rate=4.3427k/s Visit_Rate=23.4889k/s
-BM_ManagedEntitySimulation/10/8/real_time      6505534 ns      6199459 ns           96 Tick_Rate=1.22972k/s Visit_Rate=7.11414k/s
-BM_ManagedEntitySimulation/1/64/real_time       441856 ns       272063 ns         1339 Tick_Rate=144.844k/s Visit_Rate=252.482k/s
-BM_ManagedEntitySimulation/8/64/real_time     12905394 ns     12673454 ns           53 Tick_Rate=4.95917k/s Visit_Rate=33.7171k/s
-BM_ManagedEntitySimulation/10/64/real_time    47629155 ns     47273913 ns           13 Tick_Rate=1.34371k/s Visit_Rate=9.09915k/s
-BM_ManagedEntitySimulation/1/200/real_time      964016 ns       702824 ns          664 Tick_Rate=207.465k/s Visit_Rate=371.238k/s
-BM_ManagedEntitySimulation/8/200/real_time    38758702 ns     38482627 ns           18 Tick_Rate=5.16013k/s Visit_Rate=36.4764k/s
-BM_ManagedEntitySimulation/10/200/real_time  152636772 ns    152399085 ns            4 Tick_Rate=1.3103k/s Visit_Rate=9.05417k/s
-BM_SharedPtrSimulation/1/1/real_time            181182 ns        62000 ns         3814 Tick_Rate=5.51932k/s Visit_Rate=13.5682k/s
-BM_SharedPtrSimulation/8/1/real_time            828307 ns       527077 ns          744 Tick_Rate=1.20728k/s Visit_Rate=2.2101k/s
-BM_SharedPtrSimulation/10/1/real_time          2834543 ns      1973297 ns          252 Tick_Rate=352.791/s Visit_Rate=520.786/s
-BM_SharedPtrSimulation/1/8/real_time            199736 ns        77606 ns         3453 Tick_Rate=40.0529k/s Visit_Rate=58.931k/s
-BM_SharedPtrSimulation/8/8/real_time           2414199 ns      2157760 ns          284 Tick_Rate=3.31373k/s Visit_Rate=4.05611k/s
-BM_SharedPtrSimulation/10/8/real_time          8019747 ns      7454485 ns          110 Tick_Rate=997.538/s Visit_Rate=1.22085k/s
-BM_SharedPtrSimulation/1/64/real_time           420978 ns       240433 ns         1398 Tick_Rate=152.027k/s Visit_Rate=281.184k/s
-BM_SharedPtrSimulation/8/64/real_time         15756126 ns     15510316 ns           42 Tick_Rate=4.06191k/s Visit_Rate=5.83598k/s
-BM_SharedPtrSimulation/10/64/real_time        64793118 ns     64183852 ns           10 Tick_Rate=987.759/s Visit_Rate=1.48164k/s
-BM_SharedPtrSimulation/1/200/real_time         1120287 ns       746069 ns          548 Tick_Rate=178.526k/s Visit_Rate=297.221k/s
-BM_SharedPtrSimulation/8/200/real_time        53642600 ns     53294080 ns           10 Tick_Rate=3.72838k/s Visit_Rate=5.54597k/s
-BM_SharedPtrSimulation/10/200/real_time      192194260 ns    191665131 ns            3 Tick_Rate=1040.61/s Visit_Rate=1.53317k/s
-```
+| 1/1 | 37.459k | 38.213k | +2.01% | 186.784 | 3.37998k | +1709.57% |
+| 1/8 | 299.076k | 303.453k | +1.46% | 14.3101k | 1.99678k | -86.05% |
+| 1/64 | 2.33488M | 2.24199M | -3.98% | 72.5592k | 126.245k | +73.99% |
+| 1/512 | 2.76475M | 2.28316M | -17.42% | 6.64838M | 6.79573M | +2.22% |
+| 1/2000 | 2.58336M | 2.30162M | -10.91% | 6.95764M | 7.27152M | +4.51% |
+| 8/1 | 27.3378k | 31.2711k | +14.39% | 14.3744k | 42.1447k | +193.19% |
+| 8/8 | 50.8016k | 108.822k | +114.21% | 53.6824k | 1049.41k | +1854.85% |
+| 8/64 | 76.0643k | 146.696k | +92.86% | 102.194k | 1.646M | +1510.66% |
+| 8/512 | 61.9295k | 168.744k | +172.48% | 90.1897k | 1.56162M | +1631.48% |
+| 8/2000 | 67.7613k | 159.8k | +135.83% | 94.997k | 1.7113M | +1701.43% |
+| 15/1 | 326.351 | 1066.75 | +226.87% | 332.827 | 3.07806k | +824.82% |
+| 15/8 | 638.343 | 1.6006k | +150.74% | 725.39 | 8.9282k | +1130.81% |
+| 15/64 | 523.81 | 1055.59 | +101.52% | 587.649 | 4.54172k | +672.86% |
+| 15/512 | 523.186 | 620.469 | +18.59% | 596.759 | 1.59965k | +168.06% |
+| 15/2000 | 526.039 | 594.934 | +13.10% | 586.797 | 1.48823k | +153.62% |

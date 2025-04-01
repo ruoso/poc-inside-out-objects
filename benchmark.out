@@ -1,27 +1,33 @@
-------------------------------------------------------------------------------------------------------
-Benchmark                                            Time             CPU   Iterations UserCounters...
-------------------------------------------------------------------------------------------------------
-BM_ManagedEntitySimulation/1/1/real_time        178125 ns        62806 ns         3957 Tick_Rate=5.61404k/s Visit_Rate=49.6169k/s
-BM_ManagedEntitySimulation/8/1/real_time        531247 ns       301930 ns         1200 Tick_Rate=1.88236k/s Visit_Rate=11.6738k/s
-BM_ManagedEntitySimulation/10/1/real_time      1362998 ns       929080 ns          493 Tick_Rate=733.677/s Visit_Rate=2.92727k/s
-BM_ManagedEntitySimulation/1/8/real_time        206632 ns        85676 ns         3287 Tick_Rate=38.7162k/s Visit_Rate=97.5503k/s
-BM_ManagedEntitySimulation/8/8/real_time       1842173 ns      1628820 ns          377 Tick_Rate=4.3427k/s Visit_Rate=23.4889k/s
-BM_ManagedEntitySimulation/10/8/real_time      6505534 ns      6199459 ns           96 Tick_Rate=1.22972k/s Visit_Rate=7.11414k/s
-BM_ManagedEntitySimulation/1/64/real_time       441856 ns       272063 ns         1339 Tick_Rate=144.844k/s Visit_Rate=252.482k/s
-BM_ManagedEntitySimulation/8/64/real_time     12905394 ns     12673454 ns           53 Tick_Rate=4.95917k/s Visit_Rate=33.7171k/s
-BM_ManagedEntitySimulation/10/64/real_time    47629155 ns     47273913 ns           13 Tick_Rate=1.34371k/s Visit_Rate=9.09915k/s
-BM_ManagedEntitySimulation/1/200/real_time      964016 ns       702824 ns          664 Tick_Rate=207.465k/s Visit_Rate=371.238k/s
-BM_ManagedEntitySimulation/8/200/real_time    38758702 ns     38482627 ns           18 Tick_Rate=5.16013k/s Visit_Rate=36.4764k/s
-BM_ManagedEntitySimulation/10/200/real_time  152636772 ns    152399085 ns            4 Tick_Rate=1.3103k/s Visit_Rate=9.05417k/s
-BM_SharedPtrSimulation/1/1/real_time            181182 ns        62000 ns         3814 Tick_Rate=5.51932k/s Visit_Rate=13.5682k/s
-BM_SharedPtrSimulation/8/1/real_time            828307 ns       527077 ns          744 Tick_Rate=1.20728k/s Visit_Rate=2.2101k/s
-BM_SharedPtrSimulation/10/1/real_time          2834543 ns      1973297 ns          252 Tick_Rate=352.791/s Visit_Rate=520.786/s
-BM_SharedPtrSimulation/1/8/real_time            199736 ns        77606 ns         3453 Tick_Rate=40.0529k/s Visit_Rate=58.931k/s
-BM_SharedPtrSimulation/8/8/real_time           2414199 ns      2157760 ns          284 Tick_Rate=3.31373k/s Visit_Rate=4.05611k/s
-BM_SharedPtrSimulation/10/8/real_time          8019747 ns      7454485 ns          110 Tick_Rate=997.538/s Visit_Rate=1.22085k/s
-BM_SharedPtrSimulation/1/64/real_time           420978 ns       240433 ns         1398 Tick_Rate=152.027k/s Visit_Rate=281.184k/s
-BM_SharedPtrSimulation/8/64/real_time         15756126 ns     15510316 ns           42 Tick_Rate=4.06191k/s Visit_Rate=5.83598k/s
-BM_SharedPtrSimulation/10/64/real_time        64793118 ns     64183852 ns           10 Tick_Rate=987.759/s Visit_Rate=1.48164k/s
-BM_SharedPtrSimulation/1/200/real_time         1120287 ns       746069 ns          548 Tick_Rate=178.526k/s Visit_Rate=297.221k/s
-BM_SharedPtrSimulation/8/200/real_time        53642600 ns     53294080 ns           10 Tick_Rate=3.72838k/s Visit_Rate=5.54597k/s
-BM_SharedPtrSimulation/10/200/real_time      192194260 ns    191665131 ns            3 Tick_Rate=1040.61/s Visit_Rate=1.53317k/s
+-------------------------------------------------------------------------------------------------------
+Benchmark                                             Time             CPU   Iterations UserCounters...
+-------------------------------------------------------------------------------------------------------
+BM_ManagedEntitySimulation/1/1/real_time          26169 ns        17519 ns        26331 Tick_Rate=38.213k/s Visit_Rate=3.37998k/s
+BM_ManagedEntitySimulation/8/1/real_time          31978 ns        23701 ns        22708 Tick_Rate=31.2711k/s Visit_Rate=42.1447k/s
+BM_ManagedEntitySimulation/15/1/real_time        937424 ns       809147 ns          742 Tick_Rate=1066.75/s Visit_Rate=3.07806k/s
+BM_ManagedEntitySimulation/1/8/real_time          26363 ns        18051 ns        26025 Tick_Rate=303.453k/s Visit_Rate=1.99678k/s
+BM_ManagedEntitySimulation/8/8/real_time          73515 ns        66412 ns         9590 Tick_Rate=108.822k/s Visit_Rate=1049.41k/s
+BM_ManagedEntitySimulation/15/8/real_time       4998114 ns      4932616 ns          149 Tick_Rate=1.6006k/s Visit_Rate=8.9282k/s
+BM_ManagedEntitySimulation/1/64/real_time         28546 ns        22513 ns        25063 Tick_Rate=2.24199M/s Visit_Rate=126.245k/s
+BM_ManagedEntitySimulation/8/64/real_time        436277 ns       428862 ns         1757 Tick_Rate=146.696k/s Visit_Rate=1.646M/s
+BM_ManagedEntitySimulation/15/64/real_time     60629767 ns     60271113 ns           11 Tick_Rate=1055.59/s Visit_Rate=4.54172k/s
+BM_ManagedEntitySimulation/1/512/real_time       224251 ns       200007 ns         3120 Tick_Rate=2.28316M/s Visit_Rate=6.79573M/s
+BM_ManagedEntitySimulation/8/512/real_time      3034178 ns      3020087 ns          218 Tick_Rate=168.744k/s Visit_Rate=1.56162M/s
+BM_ManagedEntitySimulation/15/512/real_time   825182036 ns    825008807 ns            1 Tick_Rate=620.469/s Visit_Rate=1.59965k/s
+BM_ManagedEntitySimulation/1/2000/real_time      868953 ns       796881 ns          900 Tick_Rate=2.30162M/s Visit_Rate=7.27152M/s
+BM_ManagedEntitySimulation/8/2000/real_time    12515625 ns     12466236 ns           58 Tick_Rate=159.8k/s Visit_Rate=1.7113M/s
+BM_ManagedEntitySimulation/15/2000/real_time 3361717382 ns   3361121018 ns            1 Tick_Rate=594.934/s Visit_Rate=1.48823k/s
+BM_SharedPtrSimulation/1/1/real_time              26696 ns        17991 ns        27876 Tick_Rate=37.459k/s Visit_Rate=186.784/s
+BM_SharedPtrSimulation/8/1/real_time              36579 ns        28142 ns        19296 Tick_Rate=27.3378k/s Visit_Rate=14.3744k/s
+BM_SharedPtrSimulation/15/1/real_time           3064182 ns      2134866 ns          252 Tick_Rate=326.351/s Visit_Rate=332.827/s
+BM_SharedPtrSimulation/1/8/real_time              26749 ns        18062 ns        26020 Tick_Rate=299.076k/s Visit_Rate=14.3101k/s
+BM_SharedPtrSimulation/8/8/real_time             157475 ns       147906 ns         4521 Tick_Rate=50.8016k/s Visit_Rate=53.6824k/s
+BM_SharedPtrSimulation/15/8/real_time          12532439 ns     12028866 ns           44 Tick_Rate=638.343/s Visit_Rate=725.39/s
+BM_SharedPtrSimulation/1/64/real_time             27410 ns        20400 ns        25704 Tick_Rate=2.33488M/s Visit_Rate=72.5592k/s
+BM_SharedPtrSimulation/8/64/real_time            841394 ns       832898 ns          620 Tick_Rate=76.0643k/s Visit_Rate=102.194k/s
+BM_SharedPtrSimulation/15/64/real_time        122181774 ns    121366287 ns            5 Tick_Rate=523.81/s Visit_Rate=587.649/s
+BM_SharedPtrSimulation/1/512/real_time           185188 ns       171563 ns         3639 Tick_Rate=2.76475M/s Visit_Rate=6.64838M/s
+BM_SharedPtrSimulation/8/512/real_time          8267460 ns      8259643 ns           86 Tick_Rate=61.9295k/s Visit_Rate=90.1897k/s
+BM_SharedPtrSimulation/15/512/real_time       978620128 ns    977712476 ns            1 Tick_Rate=523.186/s Visit_Rate=596.759/s
+BM_SharedPtrSimulation/1/2000/real_time          774186 ns       737608 ns          885 Tick_Rate=2.58336M/s Visit_Rate=6.95764M/s
+BM_SharedPtrSimulation/8/2000/real_time        29515392 ns     29504971 ns           24 Tick_Rate=67.7613k/s Visit_Rate=94.997k/s
+BM_SharedPtrSimulation/15/2000/real_time     3801997055 ns   3801354646 ns            1 Tick_Rate=526.039/s Visit_Rate=586.797/s
