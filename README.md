@@ -59,13 +59,13 @@ The results are actually quite interesting.
 
 ### Tick Rate Comparison
 
-![Tick Rate Comparison](tick_rate_comparison.svg)
+![Tick Rate Comparison](charts/tick_rate_comparison.svg)
 
 ### Visit Rate Comparison
 
-![Visit Rate Comparison](visit_rate_comparison.svg)
+![Visit Rate Comparison](charts/visit_rate_comparison.svg)
 
 ### Object Creation Rate Comparison
 
-![Object Creation Rate Comparison](objects_created_comparison.svg)
+![Object Creation Rate Comparison](charts/objects_created_comparison.svg)
 
