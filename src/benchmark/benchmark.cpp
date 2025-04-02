@@ -214,7 +214,7 @@ static void BM_SharedPtrSimulation(benchmark::State& state) {
     sharedptr_visit_count, 
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
-  state.counters["Objects_Created"] = benchmark::Counter(
+  state.counters["Objects_Creation_Rate"] = benchmark::Counter(
     total_objects_created,
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
@@ -278,7 +278,7 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
     managed_entity_visit_count, 
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
-  state.counters["Objects_Created"] = benchmark::Counter(
+  state.counters["Objects_Creation_Rate"] = benchmark::Counter(
     total_objects_created,
     benchmark::Counter::kIsRate | benchmark::Counter::kAvgThreads
   );
@@ -286,12 +286,14 @@ static void BM_ManagedEntitySimulation(benchmark::State& state) {
 
 // Register benchmarks with different tree depths
 BENCHMARK(BM_ManagedEntitySimulation)
-  ->Ranges({{1, 15}, {1, 2000}})
+  ->Ranges({{8, 10}, {1000, 10000}})
   ->UseRealTime()
-  ->DisplayAggregatesOnly(true);
+  ->DisplayAggregatesOnly(true)
+  ->Iterations(100);
 BENCHMARK(BM_SharedPtrSimulation)
-  ->Ranges({{1, 15}, {1, 2000}})
+  ->Ranges({{8, 10}, {1000, 10000}})
   ->UseRealTime()
-  ->DisplayAggregatesOnly(true);
+  ->DisplayAggregatesOnly(true)
+  ->Iterations(100);
 
 BENCHMARK_MAIN();

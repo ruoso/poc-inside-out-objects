@@ -1,33 +1,244 @@
--------------------------------------------------------------------------------------------------------
-Benchmark                                             Time             CPU   Iterations UserCounters...
--------------------------------------------------------------------------------------------------------
-BM_ManagedEntitySimulation/1/1/real_time          26146 ns        17801 ns        25932 Objects_Created=38.2467k/s Tick_Rate=38.2467k/s Visit_Rate=2.2138k/s
-BM_ManagedEntitySimulation/8/1/real_time          31145 ns        22723 ns        22231 Objects_Created=256.863k/s Tick_Rate=32.1079k/s Visit_Rate=40.6797k/s
-BM_ManagedEntitySimulation/15/1/real_time        941882 ns       800507 ns          722 Objects_Created=1.47046M/s Tick_Rate=1061.7/s Visit_Rate=3.21305k/s
-BM_ManagedEntitySimulation/1/8/real_time          26884 ns        18262 ns        27534 Objects_Created=37.1962k/s Tick_Rate=297.569k/s Visit_Rate=27.0184/s
-BM_ManagedEntitySimulation/8/8/real_time          70678 ns        63912 ns         9737 Objects_Created=1075.3k/s Tick_Rate=113.189k/s Visit_Rate=1023.4k/s
-BM_ManagedEntitySimulation/15/8/real_time       5048586 ns      4976074 ns          100 Objects_Created=2.17487M/s Tick_Rate=1.5846k/s Visit_Rate=8.70343k/s
-BM_ManagedEntitySimulation/1/64/real_time         28812 ns        23221 ns        25154 Objects_Created=34.7076k/s Tick_Rate=2.22128M/s Visit_Rate=488.995k/s
-BM_ManagedEntitySimulation/8/64/real_time        446448 ns       439209 ns         1597 Objects_Created=1.56345M/s Tick_Rate=143.354k/s Visit_Rate=1.6135M/s
-BM_ManagedEntitySimulation/15/64/real_time     57000465 ns     56609711 ns           10 Objects_Created=1.54302M/s Tick_Rate=1.1228k/s Visit_Rate=4.45084k/s
-BM_ManagedEntitySimulation/1/512/real_time       258299 ns       230036 ns         2766 Objects_Created=23.2289k/s Tick_Rate=1.9822M/s Visit_Rate=7.403M/s
-BM_ManagedEntitySimulation/8/512/real_time      3198884 ns      3185090 ns          236 Objects_Created=1.58118M/s Tick_Rate=160.056k/s Visit_Rate=1.58791M/s
-BM_ManagedEntitySimulation/15/512/real_time   746017802 ns    745403235 ns            1 Objects_Created=946.716k/s Tick_Rate=686.311/s Visit_Rate=1.6702k/s
-BM_ManagedEntitySimulation/1/2000/real_time     1157255 ns      1050820 ns          705 Objects_Created=18.1464k/s Tick_Rate=1.72823M/s Visit_Rate=8.24933M/s
-BM_ManagedEntitySimulation/8/2000/real_time    12881567 ns     12841267 ns           53 Objects_Created=1.52971M/s Tick_Rate=155.261k/s Visit_Rate=1.67611M/s
-BM_ManagedEntitySimulation/15/2000/real_time 3399318933 ns   3398944025 ns            1 Objects_Created=811.668k/s Tick_Rate=588.353/s Visit_Rate=1.53972k/s
-BM_SharedPtrSimulation/1/1/real_time              26435 ns        17828 ns        25961 Objects_Created=37.8287k/s Tick_Rate=37.8287k/s Visit_Rate=1.45714/s
-BM_SharedPtrSimulation/8/1/real_time              35386 ns        27679 ns        19273 Objects_Created=226.076k/s Tick_Rate=28.2595k/s Visit_Rate=11.1305k/s
-BM_SharedPtrSimulation/15/1/real_time           3365745 ns      2328907 ns          242 Objects_Created=411.499k/s Tick_Rate=297.111/s Visit_Rate=298.339/s
-BM_SharedPtrSimulation/1/8/real_time              27377 ns        18237 ns        27536 Objects_Created=36.5264k/s Tick_Rate=292.211k/s Visit_Rate=351.521/s
-BM_SharedPtrSimulation/8/8/real_time             140867 ns       131764 ns         4539 Objects_Created=539.516k/s Tick_Rate=56.7911k/s Visit_Rate=67.6326k/s
-BM_SharedPtrSimulation/15/8/real_time          16858800 ns     16068389 ns           42 Objects_Created=651.292k/s Tick_Rate=474.53/s Visit_Rate=546.556/s
-BM_SharedPtrSimulation/1/64/real_time             26173 ns        19936 ns        25512 Objects_Created=38.208k/s Tick_Rate=2.44531M/s Visit_Rate=86.6855k/s
-BM_SharedPtrSimulation/8/64/real_time           1040731 ns      1033651 ns          609 Objects_Created=670.683k/s Tick_Rate=61.4952k/s Visit_Rate=97.7966k/s
-BM_SharedPtrSimulation/15/64/real_time        119345257 ns    118562732 ns           10 Objects_Created=736.963k/s Tick_Rate=536.259/s Visit_Rate=635.97/s
-BM_SharedPtrSimulation/1/512/real_time           226092 ns       210083 ns         2890 Objects_Created=26.5379k/s Tick_Rate=2.26456M/s Visit_Rate=6.25942M/s
-BM_SharedPtrSimulation/8/512/real_time          8958915 ns      8950365 ns           92 Objects_Created=564.577k/s Tick_Rate=57.1498k/s Visit_Rate=92.3637k/s
-BM_SharedPtrSimulation/15/512/real_time      1021421159 ns   1020487391 ns            1 Objects_Created=691.455k/s Tick_Rate=501.262/s Visit_Rate=576.648/s
-BM_SharedPtrSimulation/1/2000/real_time          894869 ns       844054 ns          939 Objects_Created=23.4671k/s Tick_Rate=2.23496M/s Visit_Rate=6.67414M/s
-BM_SharedPtrSimulation/8/2000/real_time        34063778 ns     34048826 ns           31 Objects_Created=578.474k/s Tick_Rate=58.7134k/s Visit_Rate=92.2861k/s
-BM_SharedPtrSimulation/15/2000/real_time     3942114683 ns   3941301068 ns            1 Objects_Created=699.908k/s Tick_Rate=507.342/s Visit_Rate=591.814/s
+{
+  "context": {
+    "date": "2025-04-02T18:45:45-04:00",
+    "host_name": "manga",
+    "executable": "./build/src/benchmark/cpioo_benchmark",
+    "num_cpus": 16,
+    "mhz_per_cpu": 1987,
+    "cpu_scaling_enabled": false,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 524288,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 4194304,
+        "num_sharing": 8
+      }
+    ],
+    "load_avg": [1.78271,3.53125,2.53955],
+    "library_build_type": "debug"
+  },
+  "benchmarks": [
+    {
+      "name": "BM_ManagedEntitySimulation/8/1000/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_ManagedEntitySimulation/8/1000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 6.0563889499917421e+06,
+      "cpu_time": 6.0236266199999955e+06,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 1.6255560997305866e+06,
+      "Tick_Rate": 1.6511489078015101e+05,
+      "Visit_Rate": 1.5367556603201136e+06
+    },
+    {
+      "name": "BM_ManagedEntitySimulation/10/1000/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 1,
+      "run_name": "BM_ManagedEntitySimulation/10/1000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 2.0567744070049230e+07,
+      "cpu_time": 2.0538737310000036e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 2.0497143418558247e+06,
+      "Tick_Rate": 4.8619819295408342e+04,
+      "Visit_Rate": 4.3810444010345137e+05
+    },
+    {
+      "name": "BM_ManagedEntitySimulation/8/4096/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 2,
+      "run_name": "BM_ManagedEntitySimulation/8/4096/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 2.5480174459944464e+07,
+      "cpu_time": 2.5385813690000061e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 1.5831916717609446e+06,
+      "Tick_Rate": 1.6075243152039734e+05,
+      "Visit_Rate": 1.6284142820618048e+06
+    },
+    {
+      "name": "BM_ManagedEntitySimulation/10/4096/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 3,
+      "run_name": "BM_ManagedEntitySimulation/10/4096/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 8.4175070010051057e+07,
+      "cpu_time": 8.4100808500000000e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 2.0519377053012948e+06,
+      "Tick_Rate": 4.8660488188615825e+04,
+      "Visit_Rate": 4.3439714390060917e+05
+    },
+    {
+      "name": "BM_ManagedEntitySimulation/8/10000/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 4,
+      "run_name": "BM_ManagedEntitySimulation/8/10000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 6.2883909170041077e+07,
+      "cpu_time": 6.2658991929999992e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 1.5645019735330129e+06,
+      "Tick_Rate": 1.5902319260972668e+05,
+      "Visit_Rate": 1.6308305471705301e+06
+    },
+    {
+      "name": "BM_ManagedEntitySimulation/10/10000/iterations:100/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 5,
+      "run_name": "BM_ManagedEntitySimulation/10/10000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 2.2251901429999635e+08,
+      "cpu_time": 2.2236204771000031e+08,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 1.8947414508657875e+06,
+      "Tick_Rate": 4.4939979765136704e+04,
+      "Visit_Rate": 4.2519966348782065e+05
+    },
+    {
+      "name": "BM_SharedPtrSimulation/8/1000/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_SharedPtrSimulation/8/1000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 1.5409291229962036e+07,
+      "cpu_time": 1.5388877659999380e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 6.3890024875753187e+05,
+      "Tick_Rate": 6.4895911504066215e+04,
+      "Visit_Rate": 9.0839350046046762e+04
+    },
+    {
+      "name": "BM_SharedPtrSimulation/10/1000/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 1,
+      "run_name": "BM_SharedPtrSimulation/10/1000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 6.1695400820035502e+07,
+      "cpu_time": 6.1655401689999960e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 6.8332484171671420e+05,
+      "Tick_Rate": 1.6208663639563409e+04,
+      "Visit_Rate": 2.3316648905421152e+04
+    },
+    {
+      "name": "BM_SharedPtrSimulation/8/4096/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 2,
+      "run_name": "BM_SharedPtrSimulation/8/4096/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 6.1600178169965141e+07,
+      "cpu_time": 6.1567108460000381e+07,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 6.5486823574917635e+05,
+      "Tick_Rate": 6.6493314170268379e+04,
+      "Visit_Rate": 9.3215152465252177e+04
+    },
+    {
+      "name": "BM_SharedPtrSimulation/10/4096/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 3,
+      "run_name": "BM_SharedPtrSimulation/10/4096/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 2.4313635341001827e+08,
+      "cpu_time": 2.4307227562000057e+08,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 7.1039150492121803e+05,
+      "Tick_Rate": 1.6846514075550938e+04,
+      "Visit_Rate": 2.3467449108187935e+04
+    },
+    {
+      "name": "BM_SharedPtrSimulation/8/10000/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 4,
+      "run_name": "BM_SharedPtrSimulation/8/10000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 1.4927288545003650e+08,
+      "cpu_time": 1.4922206625000045e+08,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 6.5907481927070871e+05,
+      "Tick_Rate": 6.6991402824775738e+04,
+      "Visit_Rate": 9.4041124465960864e+04
+    },
+    {
+      "name": "BM_SharedPtrSimulation/10/10000/iterations:100/real_time",
+      "family_index": 1,
+      "per_family_instance_index": 5,
+      "run_name": "BM_SharedPtrSimulation/10/10000/iterations:100/real_time",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 100,
+      "real_time": 6.1534673279000342e+08,
+      "cpu_time": 6.1528660065999913e+08,
+      "time_unit": "ns",
+      "Objects_Creation_Rate": 6.8516817841605889e+05,
+      "Tick_Rate": 1.6251000398847740e+04,
+      "Visit_Rate": 2.2582438907240015e+04
+    }
+  ]
+}
