@@ -195,13 +195,13 @@ def update_readme(readme_path, table, chart_paths):
     
     # Add each chart with its title
     charts_section += "### Tick Rate Comparison\n\n"
-    charts_section += f"![Tick Rate Comparison]({os.path.basename(chart_paths['tick_rate'])})\n\n"
+    charts_section += f"![Tick Rate Comparison](charts/{os.path.basename(chart_paths['tick_rate'])})\n\n"
     
     charts_section += "### Visit Rate Comparison\n\n"
-    charts_section += f"![Visit Rate Comparison]({os.path.basename(chart_paths['visit_rate'])})\n\n"
+    charts_section += f"![Visit Rate Comparison](charts/{os.path.basename(chart_paths['visit_rate'])})\n\n"
     
     charts_section += "### Object Creation Rate Comparison\n\n"
-    charts_section += f"![Object Creation Rate Comparison]({os.path.basename(chart_paths['objects_created'])})\n\n"
+    charts_section += f"![Object Creation Rate Comparison](charts/{os.path.basename(chart_paths['objects_created'])})\n\n"
     
     # Check if charts section already exists
     charts_pattern = r'## Benchmark Charts\s*\n\s*'
